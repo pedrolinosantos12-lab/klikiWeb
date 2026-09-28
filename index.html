@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KlikiWeb — Transforme suas ideias em sites incríveis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff;
+    --bg-alt:#f8f6fb;
+    --bg-alt2:#f0ecf7;
+    --surface:rgba(139,47,240,0.045);
+    --surface-brd:rgba(139,47,240,0.16);
+    --purple-700:#6b21c9;
+    --purple-600:#8b2ff0;
+    --purple-500:#a855f7;
+    --purple-400:#9333ea;
+    --white:#ffffff;
+    --ink:#170f24;
+    --ink-soft:#453e58;
+    --ink-dim:#6f6485;
+    --grad:linear-gradient(120deg, var(--purple-600), var(--purple-400));
+    --glow-sm:0 0 34px rgba(168,85,247,0.22);
+    --glow-md:0 0 70px rgba(168,85,247,0.25);
+    --glow-lg:0 0 140px rgba(139,47,240,0.28);
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  #smooth-content{width:100%;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter', sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    overflow-x:hidden;
+    line-height:1.65;
+  }
+  h1,h2,h3,h4{font-family:'Sora', sans-serif; letter-spacing:-0.02em; color:var(--ink);}
+  a{text-decoration:none; color:inherit;}
+  img,video{max-width:100%; display:block;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 32px;}
+  section{position:relative;}
+  .section-pad{padding:140px 0;}
+  @media(max-width:820px){ .section-pad{padding:84px 0;} .wrap{padding:0 22px;} }
+  ::selection{background:var(--purple-600); color:white;}
+
+  /* film-grain style dot backdrop, extremely subtle */
+  .dots-bg{
+    position:absolute; inset:0; pointer-events:none;
+    background-image: radial-gradient(rgba(23,15,36,0.05) 1px, transparent 1px);
+    background-size:38px 38px;
+  }
+
+  /* cursor glow */
+  #cursorGlow{
+    position:fixed; top:0; left:0; width:520px; height:520px; border-radius:50%;
+    background:radial-gradient(circle, rgba(168,85,247,0.14), transparent 70%);
+    pointer-events:none; z-index:2; transform:translate(-260px,-260px);
+    mix-blend-mode:multiply; will-change:transform; transition:opacity .3s ease;
+  }
+  @media(max-width:900px){ #cursorGlow{display:none;} }
+
+  /* ---------- kicker / labels ---------- */
+  .kicker{
+    display:inline-flex; align-items:center; gap:10px;
+    font-size:13.5px; color:var(--purple-400); font-weight:600; margin-bottom:18px;
+  }
+  .kicker::before{content:""; width:18px; height:1px; background:var(--purple-500);}
+
+  /* ---------- nav ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    backdrop-filter:blur(18px);
+    background:rgba(255,255,255,0.75);
+    border-bottom:1px solid rgba(23,15,36,0.07);
+  }
+  .nav-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 32px; max-width:var(--maxw); margin:0 auto;
+  }
+  .wordmark{font-family:'Sora',sans-serif; font-weight:700; font-size:21px; color:var(--ink);}
+  .wordmark span{
+    background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  nav ul{display:flex; gap:36px; list-style:none;}
+  nav ul li a{font-size:14.5px; color:var(--ink-soft); font-weight:500; transition:color .25s;}
+  nav ul li a:hover{color:var(--ink);}
+  .nav-cta{
+    padding:11px 22px; border-radius:100px; background:var(--grad); color:white;
+    font-weight:600; font-size:13.5px; box-shadow:0 8px 26px rgba(139,47,240,0.4);
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .nav-cta:hover{transform:translateY(-2px); box-shadow:0 12px 34px rgba(139,47,240,0.55);}
+  @media(max-width:860px){ nav ul{display:none;} }
+
+  /* ---------- hero ---------- */
+  .hero{
+    display:flex; flex-direction:column; align-items:center;
+    text-align:center; position:relative; overflow:hidden;
+    padding-top:0; padding-bottom:80px;
+  }
+  .hero-glow{
+    content:""; position:absolute; inset:0; z-index:2;
+    background:radial-gradient(ellipse 1000px 700px at 50% 0%, rgba(139,47,240,0.12), transparent 65%);
+    pointer-events:none;
+  }
+  .hero-visual{
+    position:relative; z-index:1; width:100%; height:100vh;
+  }
+  .hero-frame{width:100%; height:100%; transform-style:preserve-3d;}
+  .hero-frame canvas{width:100%; height:100%; display:block; mix-blend-mode:multiply;}
+
+  .hero-inner{
+    position:relative; z-index:1; max-width:660px; margin-top:56px; padding:0 24px;
+  }
+  .eyebrow-pill{
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(139,47,240,0.08); border:1px solid var(--surface-brd);
+    padding:8px 18px; border-radius:100px; font-size:13.5px; color:var(--purple-400);
+    margin-bottom:26px; font-weight:600;
+  }
+  .eyebrow-pill .dot{width:7px; height:7px; border-radius:50%; background:var(--purple-500); box-shadow:0 0 12px var(--purple-500);}
+  .hero h1{
+    font-size:clamp(2.1rem, 5vw, 3.4rem); font-weight:800; line-height:1.1; color:var(--ink);
+  }
+  .hero h1 .accent{ background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero p.sub{
+    margin:22px auto 0; font-size:17.5px; color:var(--ink-soft); font-weight:500; max-width:480px;
+  }
+  .hero-ctas{display:flex; gap:16px; justify-content:center; margin-top:34px; flex-wrap:wrap;}
+  .btn-primary{
+    padding:16px 30px; border-radius:100px; background:var(--grad); color:white;
+    font-weight:600; font-size:15.5px; box-shadow:0 14px 44px rgba(139,47,240,0.45);
+    transition:transform .3s ease, box-shadow .3s ease; position:relative; overflow:hidden;
+    clip-path:inset(0 round 100px);
+  }
+  .btn-primary::after{
+    content:""; position:absolute; inset:0; background:rgba(255,255,255,0.25);
+    transform:translateX(-120%) skewX(-20deg); transition:transform .6s ease;
+  }
+  .btn-primary:hover::after{transform:translateX(120%) skewX(-20deg);}
+  .btn-primary:hover{transform:translateY(-3px); box-shadow:0 18px 54px rgba(139,47,240,0.6);}
+  .btn-ghost{
+    padding:16px 28px; border-radius:100px; border:1.5px solid rgba(139,47,240,0.35); color:var(--ink);
+    font-weight:600; font-size:15.5px; background:rgba(255,255,255,0.6); backdrop-filter:blur(6px);
+    transition:border-color .3s ease, background .3s ease;
+  }
+  .btn-ghost:hover{border-color:var(--purple-500); background:rgba(168,85,247,0.1);}
+
+  .scroll-cue{
+    position:relative; z-index:1; margin-top:54px;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    color:var(--ink-soft); font-size:12.5px; font-weight:600; letter-spacing:0.03em;
+  }
+  .scroll-cue .mouse{
+    width:20px; height:32px; border:1.5px solid var(--purple-500); border-radius:12px;
+    display:flex; justify-content:center; padding-top:6px;
+  }
+  .scroll-cue .mouse .wheel{
+    width:3px; height:6px; border-radius:2px; background:var(--purple-500);
+    animation:scrollWheel 1.8s ease-in-out infinite;
+  }
+  @keyframes scrollWheel{
+    0%{transform:translateY(0); opacity:1;} 70%{opacity:0;} 100%{transform:translateY(10px); opacity:0;}
+  }
+
+  @media(max-width:760px){
+    .hero{padding-top:118px;}
+    .hero-inner{margin-top:40px;}
+  }
+
+  /* ---------- o que fazemos ---------- */
+  .services{background:var(--bg-alt);}
+  .section-head{max-width:600px; margin-bottom:60px;}
+  .section-head h2{font-size:clamp(1.8rem,3.6vw,2.6rem); line-height:1.16;}
+  .section-head p{color:var(--ink-soft); margin-top:16px; font-size:16.5px;}
+
+  .service-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:24px; perspective:1200px;}
+  @media(max-width:980px){.service-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:560px){.service-grid{grid-template-columns:1fr;}}
+  .service-card{
+    background:var(--surface); border:1px solid var(--surface-brd); border-radius:20px;
+    padding:32px 26px; transition:border-color .35s ease, box-shadow .35s ease;
+    transform-style:preserve-3d; will-change:transform;
+  }
+  .service-card:hover{border-color:rgba(168,85,247,0.5); box-shadow:0 24px 60px rgba(139,47,240,0.25);}
+  .service-card .ic{
+    width:48px; height:48px; border-radius:13px; background:var(--grad);
+    display:flex; align-items:center; justify-content:center; margin-bottom:22px;
+    box-shadow:0 10px 28px rgba(139,47,240,0.4); font-size:20px;
+  }
+  .service-card h3{font-size:17.5px; margin-bottom:10px; font-weight:600;}
+  .service-card p{font-size:14px; color:var(--ink-soft);}
+
+  /* ---------- por que escolher ---------- */
+  .why{background:var(--bg);}
+  .why-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:34px;}
+  @media(max-width:980px){.why-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:560px){.why-grid{grid-template-columns:1fr;}}
+  .why-item{text-align:left;}
+  .why-item .num{
+    font-family:'Sora'; font-size:13px; color:var(--purple-400); font-weight:600; margin-bottom:14px;
+    display:block;
+  }
+  .why-item h3{font-size:18.5px; margin-bottom:10px;}
+  .why-item p{font-size:14.5px; color:var(--ink-soft);}
+  .why-item .bar{width:34px; height:2px; background:var(--grad); margin-bottom:18px; border-radius:2px;}
+
+  /* ---------- portfolio carousel ---------- */
+  .portfolio{background:var(--bg-alt); overflow:hidden;}
+  .portfolio-head{
+    display:flex; justify-content:space-between; align-items:flex-end; gap:24px; margin-bottom:44px; flex-wrap:wrap;
+  }
+  .portfolio-arrows{display:flex; gap:10px; flex-shrink:0;}
+  .portfolio-arrow{
+    width:44px; height:44px; border-radius:50%; border:1px solid var(--surface-brd);
+    background:var(--surface); color:var(--ink); display:flex; align-items:center; justify-content:center;
+    font-size:16px; cursor:pointer; transition:border-color .25s ease, transform .25s ease;
+  }
+  .portfolio-arrow:hover{border-color:var(--purple-500); transform:translateY(-2px);}
+  .portfolio-track{
+    display:flex; gap:24px; overflow-x:auto;
+    padding-bottom:14px; margin:0 -32px; padding-left:32px; padding-right:32px;
+    scrollbar-width:none;
+  }
+  .portfolio-track::-webkit-scrollbar{display:none;}
+  .portfolio-card{
+    flex:0 0 auto; width:300px;
+    border-radius:20px; border:1px solid var(--surface-brd); background:var(--bg-alt2);
+    overflow:hidden; box-shadow:0 20px 50px rgba(23,15,36,0.12);
+    transition:transform .35s ease, border-color .35s ease;
+  }
+  .portfolio-card:hover{transform:translateY(-6px); border-color:rgba(168,85,247,0.5);}
+  .portfolio-browser-bar{
+    display:flex; align-items:center; gap:6px; padding:10px 14px; background:rgba(23,15,36,0.035);
+    border-bottom:1px solid var(--surface-brd);
+  }
+  .portfolio-browser-bar span{width:9px; height:9px; border-radius:50%; background:rgba(23,15,36,0.18);}
+  .portfolio-thumb-wrap{height:360px; overflow:hidden; position:relative;}
+  .portfolio-thumb{
+    width:100%; height:100%;
+    background-repeat:no-repeat; background-size:100% auto; background-position:top center;
+    transition:background-position 4.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .portfolio-card:hover .portfolio-thumb{background-position:bottom center;}
+  .portfolio-thumb-hint{
+    position:absolute; top:14px; right:14px; z-index:2;
+    background:rgba(7,4,12,0.8); color:var(--ink-soft); font-size:11px; font-weight:600;
+    padding:5px 10px; border-radius:100px; border:1px solid var(--surface-brd);
+    opacity:1; transition:opacity .3s ease;
+  }
+  .portfolio-card:hover .portfolio-thumb-hint{opacity:0;}
+  .portfolio-info{padding:18px 20px 22px;}
+  .portfolio-info h3{color:var(--ink); font-size:15.5px; margin-bottom:4px;}
+  .portfolio-info p{color:var(--ink-dim); font-size:13px;}
+  @media(max-width:600px){
+    .portfolio-card{width:240px;}
+    .portfolio-thumb-wrap{height:290px;}
+  }
+
+  /* ---------- processo ---------- */
+  .process{background:var(--bg);}
+  .timeline-wrap{position:relative; margin-top:20px;}
+  .timeline-line{
+    position:absolute; top:23px; left:0; right:0; height:2px; background:rgba(23,15,36,0.1);
+  }
+  .timeline-line-fill{
+    position:absolute; top:0; left:0; height:100%; width:0%; background:var(--grad); box-shadow:var(--glow-sm);
+  }
+  .timeline-steps{display:grid; grid-template-columns:repeat(4,1fr); gap:24px; position:relative;}
+  @media(max-width:900px){.timeline-steps{grid-template-columns:1fr 1fr; gap:40px;} .timeline-line{display:none;}}
+  @media(max-width:560px){.timeline-steps{grid-template-columns:1fr;}}
+  .timeline-step .step-num{
+    width:48px; height:48px; border-radius:50%; background:var(--bg-alt2); border:1px solid rgba(168,85,247,0.4);
+    display:flex; align-items:center; justify-content:center; font-family:'Sora'; color:var(--purple-400);
+    font-weight:700; margin-bottom:22px; position:relative; z-index:2;
+  }
+  .timeline-step h3{font-size:17.5px; margin-bottom:8px;}
+  .timeline-step p{font-size:14px; color:var(--ink-soft);}
+
+  /* ---------- orçamento ---------- */
+  .quote{background:var(--bg-alt);}
+  .quote-card{
+    max-width:720px; margin:0 auto; background:var(--white);
+    border:1px solid var(--surface-brd); border-radius:26px;
+    padding:44px 40px; box-shadow:0 30px 80px rgba(23,15,36,0.1);
+  }
+  @media(max-width:600px){ .quote-card{padding:32px 22px;} }
+  .quote-field{margin-bottom:22px; text-align:left;}
+  .quote-field label{
+    display:block; font-size:13.5px; font-weight:600; color:var(--ink); margin-bottom:9px;
+  }
+  .quote-field label .optional{color:var(--ink-dim); font-weight:500;}
+  .quote-field input{
+    width:100%; padding:14px 16px; border-radius:12px; border:1.5px solid var(--surface-brd);
+    background:var(--bg-alt); color:var(--ink); font-family:'Inter'; font-size:14.5px;
+    transition:border-color .25s ease, background .25s ease;
+  }
+  .quote-field input:focus{outline:none; border-color:var(--purple-500); background:var(--white);}
+  .quote-row{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media(max-width:560px){ .quote-row{grid-template-columns:1fr;} }
+
+  .attendant-toggle{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media(max-width:560px){ .attendant-toggle{grid-template-columns:1fr;} }
+  .attendant-option{
+    display:flex; align-items:center; justify-content:center; gap:9px;
+    padding:15px 16px; border-radius:14px; border:1.5px solid var(--surface-brd);
+    background:var(--bg-alt); color:var(--ink-soft); font-family:'Inter'; font-size:14.5px; font-weight:600;
+    cursor:pointer; transition:all .25s ease;
+  }
+  .attendant-option .ic{font-size:16px;}
+  .attendant-option:hover{border-color:rgba(139,47,240,0.4);}
+  .attendant-option.active{
+    background:var(--grad); border-color:transparent; color:white;
+    box-shadow:0 10px 28px rgba(139,47,240,0.35);
+  }
+  .quote-error{
+    display:none; color:#c0392b; font-size:13px; font-weight:600; margin-bottom:18px; text-align:left;
+  }
+  .quote-error.show{display:block;}
+  .quote-submit{width:100%; margin-top:6px;}
+
+  /* ---------- modal de agradecimento ---------- */
+  .thanks-overlay{
+    position:fixed; inset:0; z-index:300;
+    background:rgba(23,15,36,0.55); backdrop-filter:blur(8px);
+    display:flex; align-items:center; justify-content:center; padding:24px;
+    opacity:0; visibility:hidden; pointer-events:none;
+    transition:opacity .35s ease, visibility 0s linear .35s;
+  }
+  .thanks-overlay.show{
+    opacity:1; visibility:visible; pointer-events:auto;
+    transition:opacity .35s ease, visibility 0s linear 0s;
+  }
+  .thanks-card{
+    position:relative; background:var(--white); border-radius:26px; max-width:420px; width:100%;
+    padding:46px 38px 38px; text-align:center;
+    box-shadow:0 40px 100px rgba(23,15,36,0.35);
+    transform:scale(0.82) translateY(14px); opacity:0;
+    transition:transform .45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity .35s ease;
+  }
+  .thanks-overlay.show .thanks-card{transform:scale(1) translateY(0); opacity:1;}
+  .thanks-close{
+    position:absolute; top:16px; right:16px; width:32px; height:32px; border-radius:50%;
+    border:1px solid var(--surface-brd); background:var(--bg-alt); color:var(--ink-dim);
+    font-size:18px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:background .2s ease;
+  }
+  .thanks-close:hover{background:var(--surface-brd);}
+  .thanks-icon{width:64px; height:64px; margin:0 auto 22px;}
+  .thanks-icon svg{width:100%; height:100%;}
+  .thanks-circle{
+    stroke-dasharray:170; stroke-dashoffset:170;
+    transition:stroke-dashoffset .6s ease .1s;
+  }
+  .thanks-check{
+    stroke-dasharray:34; stroke-dashoffset:34;
+    transition:stroke-dashoffset .4s ease .55s;
+  }
+  .thanks-overlay.show .thanks-circle{stroke-dashoffset:0;}
+  .thanks-overlay.show .thanks-check{stroke-dashoffset:0;}
+  .thanks-card h3{font-size:22px; margin-bottom:12px;}
+  .thanks-card p{color:var(--ink-soft); font-size:14.5px; margin-bottom:28px;}
+  .thanks-card .btn-primary{width:100%;}
+
+  /* ---------- dúvidas frequentes ---------- */
+  .faq{background:var(--bg);}
+  .faq-list{max-width:760px; margin:0 auto;}
+  .faq-item{border-bottom:1px solid var(--surface-brd); padding:22px 0;}
+  .faq-q{
+    display:flex; justify-content:space-between; align-items:center; gap:16px; cursor:pointer;
+    color:var(--ink); font-size:16px; font-weight:600; font-family:'Sora';
+  }
+  .faq-q .plus{
+    font-size:20px; color:var(--purple-500); transition:transform .3s ease; flex-shrink:0;
+  }
+  .faq-item.open .plus{transform:rotate(45deg);}
+  .faq-a{
+    max-height:0; overflow:hidden; transition:max-height .35s ease, padding-top .35s ease;
+    color:var(--ink-soft); font-size:14.5px; line-height:1.7;
+  }
+  .faq-item.open .faq-a{max-height:220px; padding-top:14px;}
+
+  /* ---------- final cta ---------- */
+  .final-cta{
+    background:var(--bg); text-align:center; position:relative; overflow:hidden;
+  }
+  .cta-glow{
+    content:""; position:absolute; top:10%; left:50%; width:1100px; height:700px;
+    background:radial-gradient(ellipse, rgba(139,47,240,0.4), transparent 65%);
+    transform:translateX(-50%); pointer-events:none;
+  }
+  .final-cta .wrap{position:relative; z-index:2;}
+  .final-cta h2{font-size:clamp(2rem,4.6vw,3.4rem); max-width:760px; margin:0 auto 20px;}
+  .final-cta p{color:var(--ink-soft); max-width:540px; margin:0 auto 40px; font-size:17px;}
+
+  /* ---------- footer ---------- */
+  footer{background:var(--bg-alt); border-top:1px solid rgba(23,15,36,0.08); padding:60px 0 30px;}
+  .footer-grid{display:grid; grid-template-columns:1.6fr 1fr 1fr; gap:40px; margin-bottom:44px;}
+  @media(max-width:700px){.footer-grid{grid-template-columns:1fr 1fr; row-gap:32px;}}
+  .footer-grid p{color:var(--ink-dim); font-size:13.5px; max-width:260px; margin-top:12px;}
+  .footer-col h4{color:var(--ink); font-size:14px; margin-bottom:16px;}
+  .footer-col a{display:block; color:var(--ink-soft); font-size:13.5px; margin-bottom:11px; transition:color .2s;}
+  .footer-col a:hover{color:var(--purple-400);}
+  .footer-bottom{
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;
+    padding-top:26px; border-top:1px solid rgba(23,15,36,0.08); color:var(--ink-dim); font-size:12.5px;
+  }
+  .social-row{display:flex; gap:12px;}
+  .social-row a{
+    width:36px; height:36px; border-radius:50%; border:1px solid var(--surface-brd);
+    display:flex; align-items:center; justify-content:center; font-size:13px;
+  }
+
+  [data-reveal]{opacity:0; visibility:hidden;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+    [data-reveal]{opacity:1 !important; visibility:visible !important; transform:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div id="cursorGlow"></div>
+
+<header>
+  <div class="nav-row">
+    <a href="#" class="wordmark">Kliki<span>Web</span></a>
+    <nav>
+      <ul>
+        <li><a href="#servicos">O que fazemos</a></li>
+        <li><a href="#porque">Diferenciais</a></li>
+        <li><a href="#portfolio">Portfólio</a></li>
+        <li><a href="#processo">Processo</a></li>
+        <li><a href="#faq">Dúvidas</a></li>
+        <li><a href="#orcamento">Orçamento</a></li>
+      </ul>
+    </nav>
+    <a href="#orcamento" class="nav-cta">Quero meu site</a>
+  </div>
+</header>
+
+<div id="smooth-wrapper">
+<div id="smooth-content">
+
+<!-- 01 HERO -->
+<section class="hero">
+  <div class="hero-glow" id="heroGlow"></div>
+  <div class="hero-visual" id="heroVisual">
+    <div class="hero-frame" id="heroFrame">
+      <canvas id="heroCanvas" width="1280" height="720"></canvas>
+    </div>
+  </div>
+
+  <div class="hero-inner">
+    <div class="eyebrow-pill"><span class="dot"></span> Criação de sites & landing pages de alta conversão</div>
+    <h1>Transforme suas ideias em <span class="accent">sites incríveis</span></h1>
+    <p class="sub">Criamos páginas e sites de alta conversão para ajudar seu negócio a crescer de verdade.</p>
+    <div class="hero-ctas">
+      <a href="#orcamento" class="btn-primary">Quero meu site →</a>
+      <a href="#portfolio" class="btn-ghost">Ver projetos</a>
+    </div>
+  </div>
+
+  <div class="scroll-cue">
+    <div class="mouse"><div class="wheel"></div></div>
+    Role para explorar
+  </div>
+</section>
+
+<!-- 02 O QUE FAZEMOS -->
+<section class="services section-pad" id="servicos">
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <div class="kicker">O que fazemos</div>
+      <h2>Soluções digitais sob medida para o seu negócio</h2>
+      <p>Do primeiro clique até a conversão, cada projeto é construído com estratégia e design de ponta.</p>
+    </div>
+    <div class="service-grid">
+      <div class="service-card" data-reveal data-tilt>
+        <div class="ic">🚀</div>
+        <h3>Landing Pages</h3>
+        <p>Páginas focadas em conversão, criadas para transformar visitantes em clientes.</p>
+      </div>
+      <div class="service-card" data-reveal data-tilt>
+        <div class="ic">🏢</div>
+        <h3>Sites Institucionais</h3>
+        <p>Presença digital sólida para apresentar sua empresa com credibilidade.</p>
+      </div>
+      <div class="service-card" data-reveal data-tilt>
+        <div class="ic">📈</div>
+        <h3>Sites para Empresas</h3>
+        <p>Plataformas robustas, pensadas para escalar junto com o seu negócio.</p>
+      </div>
+      <div class="service-card" data-reveal data-tilt>
+        <div class="ic">⚡</div>
+        <h3>Páginas de Alta Conversão</h3>
+        <p>Design e copy estratégicos para maximizar cada clique.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 POR QUE ESCOLHER -->
+<section class="why section-pad" id="porque">
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <div class="kicker">Por que a KlikiWeb</div>
+      <h2>Feito para causar a impressão certa</h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-item" data-reveal>
+        <div class="bar"></div>
+        <span class="num">01</span>
+        <h3>Design Moderno</h3>
+        <p>Visual profissional e responsivo.</p>
+      </div>
+      <div class="why-item" data-reveal>
+        <div class="bar"></div>
+        <span class="num">02</span>
+        <h3>Alta Conversão</h3>
+        <p>Estratégia focada em resultados.</p>
+      </div>
+      <div class="why-item" data-reveal>
+        <div class="bar"></div>
+        <span class="num">03</span>
+        <h3>Experiência Premium</h3>
+        <p>Sites pensados para valorizar sua marca.</p>
+      </div>
+      <div class="why-item" data-reveal>
+        <div class="bar"></div>
+        <span class="num">04</span>
+        <h3>Suporte Completo</h3>
+        <p>Acompanhamento durante o projeto.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 PORTFÓLIO -->
+<section class="portfolio section-pad" id="portfolio">
+  <div class="wrap">
+    <div class="portfolio-head" data-reveal>
+      <div class="section-head" style="margin-bottom:0;">
+        <div class="kicker">Portfólio</div>
+        <h2>Projetos que já colocamos no ar</h2>
+        <p>Passe o mouse sobre a miniatura para ver o site completo, de cima a baixo.</p>
+      </div>
+      <div class="portfolio-arrows">
+        <div class="portfolio-arrow" id="portfolioPrev">←</div>
+        <div class="portfolio-arrow" id="portfolioNext">→</div>
+      </div>
+    </div>
+    <div class="portfolio-track" id="portfolioTrack">
+      <a class="portfolio-card" href="https://manicureprevia.lovable.app/" target="_blank" rel="noopener">
+        <div class="portfolio-browser-bar"><span></span><span></span><span></span></div>
+        <div class="portfolio-thumb-wrap">
+          <div class="portfolio-thumb-hint">Passe o mouse</div>
+          <div class="portfolio-thumb" style="background-image:url('assets/portfolio-studio-blanche.png');"></div>
+        </div>
+        <div class="portfolio-info">
+          <h3>Studio Blanche</h3>
+          <p>Nail designer</p>
+        </div>
+      </a>
+      <a class="portfolio-card" href="https://odontoprojeto.lovable.app/" target="_blank" rel="noopener">
+        <div class="portfolio-browser-bar"><span></span><span></span><span></span></div>
+        <div class="portfolio-thumb-wrap">
+          <div class="portfolio-thumb-hint">Passe o mouse</div>
+          <div class="portfolio-thumb" style="background-image:url('assets/portfolio-clinica-aurea.png');"></div>
+        </div>
+        <div class="portfolio-info">
+          <h3>Clínica Áurea</h3>
+          <p>Odontologia</p>
+        </div>
+      </a>
+      <a class="portfolio-card" href="https://salaoprojeto.lovable.app/" target="_blank" rel="noopener">
+        <div class="portfolio-browser-bar"><span></span><span></span><span></span></div>
+        <div class="portfolio-thumb-wrap">
+          <div class="portfolio-thumb-hint">Passe o mouse</div>
+          <div class="portfolio-thumb" style="background-image:url('assets/portfolio-elan-atelier.png');"></div>
+        </div>
+        <div class="portfolio-info">
+          <h3>Élan Atelier</h3>
+          <p>Salão de beleza</p>
+        </div>
+      </a>
+      <a class="portfolio-card" href="https://academiaprevia.lovable.app/" target="_blank" rel="noopener">
+        <div class="portfolio-browser-bar"><span></span><span></span><span></span></div>
+        <div class="portfolio-thumb-wrap">
+          <div class="portfolio-thumb-hint">Passe o mouse</div>
+          <div class="portfolio-thumb" style="background-image:url('assets/portfolio-ironpulse-1.png');"></div>
+        </div>
+        <div class="portfolio-info">
+          <h3>IronPulse</h3>
+          <p>Academia</p>
+        </div>
+      </a>
+      <a class="portfolio-card" href="https://planejadosprevia.lovable.app/" target="_blank" rel="noopener">
+        <div class="portfolio-browser-bar"><span></span><span></span><span></span></div>
+        <div class="portfolio-thumb-wrap">
+          <div class="portfolio-thumb-hint">Passe o mouse</div>
+          <div class="portfolio-thumb" style="background-image:url('assets/portfolio-atelie-noma.png');"></div>
+        </div>
+        <div class="portfolio-info">
+          <h3>Ateliê Noma</h3>
+          <p>Móveis planejados</p>
+        </div>
+      </a>
+      <a class="portfolio-card" href="https://interioresprevia.lovable.app/" target="_blank" rel="noopener">
+        <div class="portfolio-browser-bar"><span></span><span></span><span></span></div>
+        <div class="portfolio-thumb-wrap">
+          <div class="portfolio-thumb-hint">Passe o mouse</div>
+          <div class="portfolio-thumb" style="background-image:url('assets/portfolio-aurea-interiores.png');"></div>
+        </div>
+        <div class="portfolio-info">
+          <h3>Áurea Interiores</h3>
+          <p>Arquitetura & interiores</p>
+        </div>
+      </a>
+      <a class="portfolio-card" href="https://designerprevia.lovable.app/" target="_blank" rel="noopener">
+        <div class="portfolio-browser-bar"><span></span><span></span><span></span></div>
+        <div class="portfolio-thumb-wrap">
+          <div class="portfolio-thumb-hint">Passe o mouse</div>
+          <div class="portfolio-thumb" style="background-image:url('assets/portfolio-elan-beauty.png');"></div>
+        </div>
+        <div class="portfolio-info">
+          <h3>Élan Beauty</h3>
+          <p>Lashes & brows designer</p>
+        </div>
+      </a>
+      <a class="portfolio-card" href="https://arquiteturaprevia.lovable.app/" target="_blank" rel="noopener">
+        <div class="portfolio-browser-bar"><span></span><span></span><span></span></div>
+        <div class="portfolio-thumb-wrap">
+          <div class="portfolio-thumb-hint">Passe o mouse</div>
+          <div class="portfolio-thumb" style="background-image:url('assets/portfolio-atria.png');"></div>
+        </div>
+        <div class="portfolio-info">
+          <h3>Atria</h3>
+          <p>Arquitetura</p>
+        </div>
+      </a>
+      <a class="portfolio-card" href="https://ateliernexusproject.netlify.app/" target="_blank" rel="noopener">
+        <div class="portfolio-browser-bar"><span></span><span></span><span></span></div>
+        <div class="portfolio-thumb-wrap">
+          <div class="portfolio-thumb-hint">Passe o mouse</div>
+          <div class="portfolio-thumb" style="background-image:url('assets/portfolio-atelier-nexus.png');"></div>
+        </div>
+        <div class="portfolio-info">
+          <h3>Atelier Nexus</h3>
+          <p>Architecture + design</p>
+        </div>
+      </a>
+      <a class="portfolio-card" href="https://academiaironpuse.netlify.app/" target="_blank" rel="noopener">
+        <div class="portfolio-browser-bar"><span></span><span></span><span></span></div>
+        <div class="portfolio-thumb-wrap">
+          <div class="portfolio-thumb-hint">Passe o mouse</div>
+          <div class="portfolio-thumb" style="background-image:url('assets/portfolio-ironpulse-2.png');"></div>
+        </div>
+        <div class="portfolio-info">
+          <h3>Iron Pulse — Disciplina Fitness</h3>
+          <p>Academia</p>
+        </div>
+      </a>
+      <a class="portfolio-card" href="https://cafeteriaprojeto.lovable.app/" target="_blank" rel="noopener">
+        <div class="portfolio-browser-bar"><span></span><span></span><span></span></div>
+        <div class="portfolio-thumb-wrap">
+          <div class="portfolio-thumb-hint">Passe o mouse</div>
+          <div class="portfolio-thumb" style="background-image:url('assets/portfolio-cafe-mais.png');"></div>
+        </div>
+        <div class="portfolio-info">
+          <h3>Café & Mais</h3>
+          <p>Cafeteria</p>
+        </div>
+      </a>
+      <a class="portfolio-card" href="https://portfoliofotografiaprevia.lovable.app/" target="_blank" rel="noopener">
+        <div class="portfolio-browser-bar"><span></span><span></span><span></span></div>
+        <div class="portfolio-thumb-wrap">
+          <div class="portfolio-thumb-hint">Passe o mouse</div>
+          <div class="portfolio-thumb" style="background-image:url('assets/portfolio-rafael-moretti.png');"></div>
+        </div>
+        <div class="portfolio-info">
+          <h3>Rafael Moretti</h3>
+          <p>Fotografia</p>
+        </div>
+      </a>
+      <a class="portfolio-card" href="https://hamburgueriabrasa77.lovable.app/" target="_blank" rel="noopener">
+        <div class="portfolio-browser-bar"><span></span><span></span><span></span></div>
+        <div class="portfolio-thumb-wrap">
+          <div class="portfolio-thumb-hint">Passe o mouse</div>
+          <div class="portfolio-thumb" style="background-image:url('assets/portfolio-brasa77.png');"></div>
+        </div>
+        <div class="portfolio-info">
+          <h3>Brasa 77</h3>
+          <p>Hamburgueria</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 05 PROCESSO -->
+<section class="process section-pad" id="processo">
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <div class="kicker">Como trabalhamos</div>
+      <h2>Do briefing à publicação, sem complicação</h2>
+    </div>
+    <div class="timeline-wrap">
+      <div class="timeline-line"><div class="timeline-line-fill" id="timelineFill"></div></div>
+      <div class="timeline-steps">
+        <div class="timeline-step" data-reveal>
+          <div class="step-num">01</div>
+          <h3>Briefing</h3>
+          <p>Entendemos seu negócio, objetivos e o que sua marca precisa comunicar.</p>
+        </div>
+        <div class="timeline-step" data-reveal>
+          <div class="step-num">02</div>
+          <h3>Design</h3>
+          <p>Criamos um layout exclusivo, alinhado à sua identidade e ao seu público.</p>
+        </div>
+        <div class="timeline-step" data-reveal>
+          <div class="step-num">03</div>
+          <h3>Desenvolvimento</h3>
+          <p>Construímos o site com performance, responsividade e boas práticas.</p>
+        </div>
+        <div class="timeline-step" data-reveal>
+          <div class="step-num">04</div>
+          <h3>Publicação</h3>
+          <p>Seu site vai ao ar, pronto para gerar resultados reais.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 DÚVIDAS FREQUENTES -->
+<section class="faq section-pad" id="faq">
+  <div class="wrap">
+    <div class="section-head" data-reveal style="margin:0 auto 44px; text-align:center;">
+      <div class="kicker" style="justify-content:center;">Dúvidas frequentes</div>
+      <h2>Perguntas que ouvimos antes de todo projeto</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item" data-reveal>
+        <div class="faq-q">Vocês oferecem hospedagem e domínio? <span class="plus">+</span></div>
+        <div class="faq-a">Sim! Todo projeto já sai com hospedagem e domínio gratuitos incluídos — você não paga nada a mais pra colocar o site no ar.</div>
+      </div>
+      <div class="faq-item" data-reveal>
+        <div class="faq-q">Em quanto tempo meu site fica pronto? <span class="plus">+</span></div>
+        <div class="faq-a">Em até 48 horas após o fechamento do projeto, seu site já está completo, revisado e no ar.</div>
+      </div>
+      <div class="faq-item" data-reveal>
+        <div class="faq-q">Preciso enviar o conteúdo pronto? <span class="plus">+</span></div>
+        <div class="faq-a">Não. Ajudamos a estruturar e revisar os textos com foco em conversão durante o processo, do jeito que combinar melhor com o seu negócio.</div>
+      </div>
+      <div class="faq-item" data-reveal>
+        <div class="faq-q">O site funciona bem no celular? <span class="plus">+</span></div>
+        <div class="faq-a">Sim, todo projeto é construído com responsividade total, mantendo velocidade e legibilidade em qualquer tela.</div>
+      </div>
+      <div class="faq-item" data-reveal>
+        <div class="faq-q">Posso pedir ajustes depois que o site estiver pronto? <span class="plus">+</span></div>
+        <div class="faq-a">Sim, todo projeto inclui um período de suporte e ajustes após a entrega, sem custo adicional.</div>
+      </div>
+      <div class="faq-item" data-reveal>
+        <div class="faq-q">Como funciona o pagamento? <span class="plus">+</span></div>
+        <div class="faq-a">Combinamos a forma de pagamento diretamente com você durante o orçamento, com condições flexíveis para o seu projeto.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 ORÇAMENTO -->
+<section class="quote section-pad" id="orcamento">
+  <div class="wrap">
+    <div class="section-head" data-reveal style="margin:0 auto 44px; text-align:center;">
+      <div class="kicker" style="justify-content:center;">Faça seu orçamento</div>
+      <h2>Vamos começar o seu projeto</h2>
+      <p>Preencha os dados abaixo e fale direto com a gente pelo WhatsApp.</p>
+    </div>
+
+    <form class="quote-card" id="quoteForm" data-reveal>
+      <div class="quote-field">
+        <label>Prefiro ser atendido por</label>
+        <div class="attendant-toggle">
+          <button type="button" class="attendant-option" data-value="feminino">
+            <span class="ic">♀</span> Atendimento feminino
+          </button>
+          <button type="button" class="attendant-option" data-value="masculino">
+            <span class="ic">♂</span> Atendimento masculino
+          </button>
+        </div>
+      </div>
+
+      <div class="quote-row">
+        <div class="quote-field">
+          <label for="qName">Nome</label>
+          <input type="text" id="qName" placeholder="Seu nome" required>
+        </div>
+        <div class="quote-field">
+          <label for="qPhone">Número (WhatsApp)</label>
+          <input type="tel" id="qPhone" placeholder="(11) 91234-5678" required>
+        </div>
+      </div>
+
+      <div class="quote-row">
+        <div class="quote-field">
+          <label for="qEmail">E-mail <span class="optional">(opcional)</span></label>
+          <input type="email" id="qEmail" placeholder="seu@email.com">
+        </div>
+        <div class="quote-field">
+          <label for="qService">Tipo de serviço / Ramo</label>
+          <input type="text" id="qService" placeholder="Ex: landing page, salão de beleza..." required>
+        </div>
+      </div>
+
+      <p class="quote-error" id="quoteError">Selecione um atendimento e preencha nome e número para continuar.</p>
+
+      <button type="submit" class="btn-primary quote-submit">Enviar orçamento →</button>
+    </form>
+  </div>
+</section>
+
+<!-- 08 CTA FINAL -->
+<section class="final-cta section-pad" id="cta-final">
+  <div class="cta-glow" id="ctaGlow"></div>
+  <div class="wrap">
+    <h2 data-reveal>Seu próximo site começa aqui.</h2>
+    <p data-reveal>Vamos transformar sua ideia em uma presença digital que realmente impressiona.</p>
+    <a href="#orcamento" class="btn-primary">Criar meu site →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a href="#" class="wordmark">Kliki<span>Web</span></a>
+        <p>Sites e landing pages de alta conversão para negócios que querem crescer de verdade.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navegação</h4>
+        <a href="#servicos">O que fazemos</a>
+        <a href="#porque">Diferenciais</a>
+        <a href="#portfolio">Portfólio</a>
+        <a href="#processo">Processo</a>
+        <a href="#faq">Dúvidas</a>
+        <a href="#orcamento">Orçamento</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contato</h4>
+        <a href="#">Fale conosco</a>
+        <a href="#">Instagram</a>
+        <a href="#">WhatsApp</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 KlikiWeb. Todos os direitos reservados.</span>
+      <div class="social-row">
+        <a href="#">in</a>
+        <a href="#">ig</a>
+        <a href="#">wa</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</div>
+</div>
+
+<!-- MODAL DE AGRADECIMENTO -->
+<div class="thanks-overlay" id="thanksOverlay">
+  <div class="thanks-card" id="thanksCard">
+    <button type="button" class="thanks-close" id="thanksClose">×</button>
+    <div class="thanks-icon">
+      <svg viewBox="0 0 60 60" fill="none">
+        <circle class="thanks-circle" cx="30" cy="30" r="27" stroke="url(#thanksGrad)" stroke-width="3"/>
+        <path class="thanks-check" d="M18 31L26 39L42 21" stroke="url(#thanksGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs>
+          <linearGradient id="thanksGrad" x1="0" y1="0" x2="60" y2="60">
+            <stop offset="0" stop-color="#8b2ff0"/>
+            <stop offset="1" stop-color="#a78bfa"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <h3>Obrigado, <span id="thanksName">tudo certo</span>!</h3>
+    <p id="thanksMessage">Recebemos seus dados. Abrimos o WhatsApp para você finalizar o envio — é só apertar em enviar por lá. Em breve falamos com você!</p>
+    <button type="button" class="btn-primary" id="thanksOk">Perfeito →</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isDesktop = window.matchMedia('(min-width: 861px)').matches;
+
+  // sequência de frames do hero (substitui o vídeo por imagens controladas pelo scroll)
+  const HERO_FRAME_COUNT = 150;
+  const heroCanvas = document.getElementById('heroCanvas');
+  const heroCtx = heroCanvas ? heroCanvas.getContext('2d') : null;
+  const heroFrames = [];
+  let heroFramesReady = 0;
+  let heroCurrentIndex = 0;
+
+  function heroFrameSrc(i){
+    const n = String(i + 1).padStart(3, '0');
+    const folder = isDesktop ? 'hero-frames' : 'hero-frames-mobile';
+    return `assets/${folder}/frame_${n}.jpg`;
+  }
+  // redimensiona o canvas para preencher toda a área do Hero, na resolução real de tela
+  // (sem esticar em CSS, que é o que causa perda de nitidez)
+  function resizeHeroCanvas(){
+    if(!heroCanvas) return;
+    const rect = heroCanvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.max(1, Math.round(rect.width * dpr));
+    const h = Math.max(1, Math.round(rect.height * dpr));
+    if(heroCanvas.width !== w || heroCanvas.height !== h){
+      heroCanvas.width = w;
+      heroCanvas.height = h;
+    }
+  }
+  // desenha tipo "cover": preenche o canvas inteiro mantendo a proporção da imagem,
+  // cortando o excedente ao invés de esticar (o que perderia qualidade)
+  function drawHeroFrame(index){
+    if(!heroCtx || !heroCanvas) return;
+    heroCurrentIndex = Math.max(0, Math.min(HERO_FRAME_COUNT - 1, index));
+    const img = heroFrames[heroCurrentIndex];
+    if(img && img.complete && img.naturalWidth){
+      const cw = heroCanvas.width, ch = heroCanvas.height;
+      const iw = img.naturalWidth, ih = img.naturalHeight;
+      const scale = Math.max(cw / iw, ch / ih);
+      const dw = iw * scale, dh = ih * scale;
+      const dx = (cw - dw) / 2, dy = (ch - dh) / 2;
+      heroCtx.clearRect(0, 0, cw, ch);
+      heroCtx.drawImage(img, dx, dy, dw, dh);
+    }
+  }
+  if(heroCanvas){
+    resizeHeroCanvas();
+    for(let i = 0; i < HERO_FRAME_COUNT; i++){
+      const img = new Image();
+      img.src = heroFrameSrc(i);
+      img.onload = () => {
+        heroFramesReady++;
+        if(i === 0) drawHeroFrame(0);
+      };
+      heroFrames.push(img);
+    }
+    let heroResizeTimer;
+    window.addEventListener('resize', ()=>{
+      clearTimeout(heroResizeTimer);
+      heroResizeTimer = setTimeout(()=>{
+        resizeHeroCanvas();
+        drawHeroFrame(heroCurrentIndex);
+        if(window.ScrollTrigger) ScrollTrigger.refresh();
+      }, 150);
+    });
+  }
+
+  if(window.gsap && window.ScrollTrigger && !prefersReduced){
+    gsap.registerPlugin(ScrollTrigger);
+
+    // ---------- scroll suave com inércia (a página "desliza" em vez de parar seco) ----------
+    const smoothWrapper = document.getElementById('smooth-wrapper');
+    const smoothContent = document.getElementById('smooth-content');
+    let smoothEnabled = false;
+
+    if(smoothWrapper && smoothContent){
+      smoothEnabled = true;
+      smoothWrapper.style.position = 'fixed';
+      smoothWrapper.style.top = '0';
+      smoothWrapper.style.left = '0';
+      smoothWrapper.style.width = '100%';
+      smoothWrapper.style.overflow = 'hidden';
+
+      let currentScroll = window.scrollY || 0;
+      let targetScroll = currentScroll;
+      const ease = isDesktop ? 0.085 : 0.14;
+
+      function setBodyHeight(){
+        document.body.style.height = smoothContent.getBoundingClientRect().height + 'px';
+      }
+      setBodyHeight();
+      window.addEventListener('resize', ()=> setBodyHeight());
+
+      ScrollTrigger.scrollerProxy(window, {
+        scrollTop(value){
+          if(arguments.length){ targetScroll = value; return; }
+          return currentScroll;
+        },
+        getBoundingClientRect(){
+          return {top:0, left:0, width:window.innerWidth, height:window.innerHeight};
+        },
+        pinType: 'transform'
+      });
+
+      function smoothTick(){
+        targetScroll = window.scrollY;
+        currentScroll += (targetScroll - currentScroll) * ease;
+        if(Math.abs(targetScroll - currentScroll) < 0.05) currentScroll = targetScroll;
+        gsap.set(smoothContent, {y: -currentScroll});
+        ScrollTrigger.update();
+        requestAnimationFrame(smoothTick);
+      }
+      requestAnimationFrame(smoothTick);
+
+      ScrollTrigger.addEventListener('refresh', setBodyHeight);
+      ScrollTrigger.refresh();
+      window.addEventListener('load', ()=>{
+        setBodyHeight();
+        ScrollTrigger.refresh();
+      });
+    }
+
+    // reveal all [data-reveal] elements: fade + translateY + rotação e escala 3D
+    gsap.utils.toArray('[data-reveal]').forEach((el, i)=>{
+      gsap.fromTo(el,
+        {opacity:0, y:52, z:-40, rotateX: isDesktop ? 16 : 4, scale:0.94, transformPerspective:900, visibility:'hidden'},
+        {
+          opacity:1, y:0, z:0, rotateX:0, scale:1, visibility:'visible', duration:1, ease:'power3.out',
+          scrollTrigger:{ trigger:el, start:'top 88%', toggleActions:'play none none reverse' }
+        }
+      );
+    });
+
+    // parallax sutil nos brilhos decorativos de fundo (profundidade extra ao rolar)
+    if(isDesktop){
+      gsap.fromTo('#heroGlow', {y:-20}, {
+        y:50, ease:'none',
+        scrollTrigger:{ trigger:'.hero', start:'top top', end:'bottom top', scrub:0.7 }
+      });
+      gsap.fromTo('#ctaGlow', {y:-30}, {
+        y:30, ease:'none',
+        scrollTrigger:{ trigger:'.final-cta', start:'top bottom', end:'bottom top', scrub:0.8 }
+      });
+      gsap.utils.toArray('.service-card').forEach((card, i)=>{
+        gsap.fromTo(card, {rotateY: i % 2 === 0 ? -10 : 10}, {
+          rotateY:0, ease:'none',
+          scrollTrigger:{ trigger:card, start:'top 95%', end:'top 55%', scrub:0.6 }
+        });
+      });
+    }
+
+    // hero visual: pin + scrub da sequência de frames ao rolar (desktop e mobile)
+    if(heroCanvas){
+      ScrollTrigger.create({
+        trigger:'#heroVisual',
+        start:'top top',
+        end:'+=280%',
+        pin:true,
+        pinSpacing:true,
+        scrub:0.7,
+        onUpdate:(self)=>{
+          const idx = Math.floor(self.progress * (HERO_FRAME_COUNT - 1));
+          drawHeroFrame(idx);
+        }
+      });
+    }
+
+    // timeline fill animation
+    gsap.to('#timelineFill', {
+      width:'100%', ease:'none',
+      scrollTrigger:{ trigger:'.timeline-wrap', start:'top 70%', end:'bottom 60%', scrub:0.6 }
+    });
+  } else {
+    // fallback: just show everything, no animation
+    document.querySelectorAll('[data-reveal]').forEach(el=>{
+      el.style.opacity = 1; el.style.visibility = 'visible';
+    });
+    const fill = document.getElementById('timelineFill');
+    if(fill) fill.style.width = '100%';
+    if(heroCanvas){
+      const lastImg = heroFrames[HERO_FRAME_COUNT - 1];
+      if(lastImg){
+        lastImg.onload = () => drawHeroFrame(HERO_FRAME_COUNT - 1);
+        if(lastImg.complete) drawHeroFrame(HERO_FRAME_COUNT - 1);
+      }
+    }
+  }
+
+  // cursor glow follow (desktop only)
+  const glow = document.getElementById('cursorGlow');
+  if(glow && isDesktop){
+    window.addEventListener('mousemove', (e)=>{
+      glow.style.transform = `translate(${e.clientX - 260}px, ${e.clientY - 260}px)`;
+    });
+  }
+
+  // 3D tilt on service cards (desktop only, mouse-driven)
+  if(isDesktop){
+    document.querySelectorAll('[data-tilt]').forEach(card=>{
+      card.addEventListener('mousemove', (e)=>{
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        card.style.transform = `perspective(700px) rotateY(${x*10}deg) rotateX(${-y*10}deg) translateY(-4px)`;
+      });
+      card.addEventListener('mouseleave', ()=>{
+        card.style.transform = 'perspective(700px) rotateY(0) rotateX(0) translateY(0)';
+      });
+    });
+  }
+
+  // portfolio carousel: arrows + movimento automático contínuo
+  const portfolioTrack = document.getElementById('portfolioTrack');
+  if(portfolioTrack){
+    const scrollAmount = () => portfolioTrack.querySelector('.portfolio-card').offsetWidth + 24;
+    document.getElementById('portfolioNext').addEventListener('click', ()=>{
+      portfolioTrack.scrollBy({left: scrollAmount(), behavior:'smooth'});
+    });
+    document.getElementById('portfolioPrev').addEventListener('click', ()=>{
+      portfolioTrack.scrollBy({left: -scrollAmount(), behavior:'smooth'});
+    });
+
+    let autoPaused = false;
+    portfolioTrack.addEventListener('mouseenter', ()=> autoPaused = true);
+    portfolioTrack.addEventListener('mouseleave', ()=> autoPaused = false);
+    portfolioTrack.addEventListener('touchstart', ()=> autoPaused = true, {passive:true});
+    portfolioTrack.addEventListener('touchend', ()=> setTimeout(()=> autoPaused = false, 1500));
+
+    function autoScrollStep(){
+      if(!autoPaused && !prefersReduced){
+        const maxScroll = portfolioTrack.scrollWidth - portfolioTrack.clientWidth;
+        if(maxScroll > 0){
+          if(portfolioTrack.scrollLeft >= maxScroll - 1){
+            portfolioTrack.scrollLeft = 0;
+          } else {
+            portfolioTrack.scrollLeft += 1.4;
+          }
+        }
+      }
+      requestAnimationFrame(autoScrollStep);
+    }
+    requestAnimationFrame(autoScrollStep);
+  }
+
+  // accordion de dúvidas frequentes
+  document.querySelectorAll('.faq-item').forEach(item=>{
+    item.querySelector('.faq-q').addEventListener('click', ()=>{
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(i=> i.classList.remove('open'));
+      if(!isOpen) item.classList.add('open');
+    });
+  });
+
+  // formulário de orçamento
+  const quoteForm = document.getElementById('quoteForm');
+  if(quoteForm){
+    const WHATSAPP_NUMBERS = {
+      masculino: '5511978461028',
+      feminino: '5588992220990'
+    };
+    let selectedAttendant = null;
+    const attendantButtons = document.querySelectorAll('.attendant-option');
+    const quoteError = document.getElementById('quoteError');
+
+    attendantButtons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        attendantButtons.forEach(b=> b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedAttendant = btn.dataset.value;
+        quoteError.classList.remove('show');
+      });
+    });
+
+    quoteForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const name = document.getElementById('qName').value.trim();
+      const phone = document.getElementById('qPhone').value.trim();
+      const email = document.getElementById('qEmail').value.trim();
+      const service = document.getElementById('qService').value.trim();
+
+      if(!selectedAttendant || !name || !phone || !service){
+        quoteError.classList.add('show');
+        return;
+      }
+      quoteError.classList.remove('show');
+
+      const targetNumber = WHATSAPP_NUMBERS[selectedAttendant];
+      const attendantLabel = selectedAttendant === 'masculino' ? 'Atendimento masculino' : 'Atendimento feminino';
+
+      let message = `Olá! Vim pelo site da KlikiWeb e gostaria de um orçamento.\n\n`;
+      message += `Nome: ${name}\n`;
+      message += `Número: ${phone}\n`;
+      if(email) message += `E-mail: ${email}\n`;
+      message += `Tipo de serviço / Ramo: ${service}\n`;
+      message += `Preferência: ${attendantLabel}`;
+
+      const url = `https://wa.me/${targetNumber}?text=${encodeURIComponent(message)}`;
+      const popupW = 480, popupH = 680;
+      const popupLeft = window.screenX + (window.outerWidth - popupW) / 2;
+      const popupTop = window.screenY + (window.outerHeight - popupH) / 2;
+      window.open(url, 'whatsappOrcamento', `width=${popupW},height=${popupH},left=${popupLeft},top=${popupTop},noopener`);
+
+      showThanksModal(name);
+
+      quoteForm.reset();
+      attendantButtons.forEach(b=> b.classList.remove('active'));
+      selectedAttendant = null;
+    });
+  }
+
+  // modal de agradecimento
+  const thanksOverlay = document.getElementById('thanksOverlay');
+  const thanksName = document.getElementById('thanksName');
+  let thanksTimer = null;
+
+  function showThanksModal(name){
+    if(!thanksOverlay) return;
+    thanksName.textContent = name ? name.split(' ')[0] : 'tudo certo';
+    thanksOverlay.classList.add('show');
+    clearTimeout(thanksTimer);
+    thanksTimer = setTimeout(hideThanksModal, 7000);
+  }
+  function hideThanksModal(){
+    if(!thanksOverlay) return;
+    thanksOverlay.classList.remove('show');
+    clearTimeout(thanksTimer);
+  }
+  document.getElementById('thanksClose')?.addEventListener('click', hideThanksModal);
+  document.getElementById('thanksOk')?.addEventListener('click', hideThanksModal);
+  thanksOverlay?.addEventListener('click', (e)=>{
+    if(e.target === thanksOverlay) hideThanksModal();
+  });
+</script>
+
+</body>
+</html>
